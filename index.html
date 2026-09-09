@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HorusClient</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init({ publicKey: "Z-hIpBPG8EwseEYGJ" });
+        })();
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">HorusClient</div>
+        <div class="nav-buttons">
+            <button id="devPanelBtn" class="btn-primary hidden" style="background-color: #e11d48;">Разработка</button>
+            <button id="navAuthBtn" class="btn-primary">Войти</button>
+        </div>
+    </nav>
+
+    <main class="hero">
+        <h1 class="glow-text">HorusClient — это твое будущее</h1>
+        <div class="scroll-arrow">▼</div>
+    </main>
+
+    <!-- Секция с тарифами -->
+    <section class="pricing-section">
+        <h2 class="glow-text" style="text-align: center; margin-bottom: 30px;">Тарифы и услуги</h2>
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3>Подписка на 67 дн</h3>
+                <div class="price">119 руб</div>
+                <button class="btn-buy" data-title="Подписка на 67 дн" data-price="119 руб">Купить</button>
+            </div>
+            <div class="pricing-card">
+                <h3>Подписка 360 дн</h3>
+                <div class="price">300 руб</div>
+                <button class="btn-buy" data-title="Подписка 360 дн" data-price="300 руб">Купить</button>
+            </div>
+            <div class="pricing-card">
+                <h3>Подписка навсегда</h3>
+                <div class="price">500 руб</div>
+                <button class="btn-buy" data-title="Подписка навсегда" data-price="500 руб">Купить</button>
+            </div>
+            <div class="pricing-card">
+                <h3>Доступ BETA</h3>
+                <div class="price">249 руб <span style="font-size: 14px; color: gray;">навсегда</span></div>
+                <button class="btn-buy" data-title="Доступ BETA (навсегда)" data-price="249 руб">Купить</button>
+            </div>
+            <div class="pricing-card">
+                <h3>Сброс HWID</h3>
+                <div class="price">99 руб</div>
+                <button class="btn-buy" data-title="Сброс HWID" data-price="99 руб">Купить</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Мини-меню оплаты -->
+    <div id="paymentModal" class="modal hidden">
+        <div class="modal-content payment-modal-content">
+            <span class="close-btn" id="closePayment">&times;</span>
+            <h3 class="glow-text" style="margin-bottom: 5px;">Оплата тарифа</h3>
+            <p id="paymentItemTitle" style="color: #c084fc; font-weight: bold; margin: 0;"></p>
+            <p id="paymentItemPrice" style="color: #22c55e; font-size: 1.2rem; font-weight: bold; margin: 5px 0 15px 0;"></p>
+            
+            <p style="font-size: 13px; color: gray; margin-bottom: 10px;">Выберите удобный способ оплаты:</p>
+            
+            <div class="payment-methods">
+                <button class="pay-method-btn" onclick="alert('Перенаправление на оплату СБП (QR)...')">
+                    <span>⚡ Система быстрых платежей (СБП)</span>
+                </button>
+                <button class="pay-method-btn" onclick="alert('Перенаправление в Т-Банк...')">
+                    <span>🟡 Т-Банк</span>
+                </button>
+                <button class="pay-method-btn" onclick="alert('Перенаправление на оплату картой...')">
+                    <span>💳 Банковская карта (РФ / Мир)</span>
+                </button>
+                <button class="pay-method-btn" onclick="alert('Перенаправление в бот / Stars...')">
+                    <span>⭐ Telegram Stars / Криптовалюта</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Окно Входа / Регистрации -->
+    <div id="authModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn" id="closeAuth">&times;</span>
+            <h2 id="authTitle" class="glow-text">Вход</h2>
+            
+            <input type="text" id="usernameInput" class="hidden" placeholder="Никнейм">
+            <input type="text" id="emailInput" placeholder="Email или Никнейм">
+            <input type="password" id="passwordInput" placeholder="Пароль">
+            
+            <button id="submitAuthBtn" class="btn-primary">Войти</button>
+            <p id="toggleAuthMode" class="toggle-text">Нет аккаунта? Зарегистрироваться</p>
+        </div>
+    </div>
+
+    <!-- Мини-меню подтверждения кода -->
+    <div id="verifyModal" class="modal hidden">
+        <div class="modal-content" style="width: 300px; text-align: center;">
+            <h3 class="glow-text">Подтверждение почты</h3>
+            <p id="verifyInfoText" style="font-size: 13px; color: gray;">Код был отправлен на почту</p>
+            <input type="text" id="codeInput" placeholder="Введите 6-значный код" style="text-align: center; font-size: 18px; letter-spacing: 3px;">
+            <button id="confirmCodeBtn" class="btn-primary">Подтвердить</button>
+        </div>
+    </div>
+
+    <!-- Полноэкранный Профиль -->
+    <div id="profileModal" class="fullscreen-profile hidden">
+        <div class="profile-container">
+            <div class="profile-header">
+                <h2 class="glow-text">Личный кабинет</h2>
+                <div style="display: flex; gap: 10px;">
+                    <!-- Скрыты по умолчанию, скрипт покажет их нужным ролям -->
+                    <button id="musicPanelBtn" class="btn-primary hidden" style="background-color: #8b5cf6;">🎵 Музыка</button>
+                    <button id="moderPanelBtn" class="btn-primary hidden" style="background-color: #1e40af;">Модератор</button>
+                    <button id="closeProfile" class="btn-secondary">Закрыть</button>
+                </div>
+            </div>
+
+            <!-- Блок для заблокированного аккаунта -->
+            <div id="bannedBox" class="banned-banner hidden">
+                <div class="banned-info">
+                    <span class="banned-badge">Ваш аккаунт заблокирован</span>
+                    <span class="support-text">Поддержка</span>
+                    <a href="https://t.me/Makaronpay" target="_blank" class="btn-telegram">Telegram @Makaronpay</a>
+                </div>
+                <div class="banned-user-data">
+                    <p><strong>Никнейм:</strong> <span id="banProfUser">—</span></p>
+                    <p><strong>Email:</strong> <span id="banProfEmail">—</span></p>
+                    <p><strong>UID:</strong> <span id="banProfUid" class="uid-text">—</span></p>
+                    <p style="color: #f87171;"><strong>Причина бана:</strong> <span id="banProfReason">—</span></p>
+                    <p style="color: #94a3b8; font-size: 13px;"><strong>Заблокировал:</strong> <span id="banProfBy">—</span></p>
+                </div>
+            </div>
+
+            <!-- Стандартное содержимое профиля -->
+            <div id="profileContentNormal">
+                <div class="download-banner">
+                    <div>
+                        <h3>HorusClient Launcher</h3>
+                        <p>Скачай актуальную версию лаунчера для входа в игру</p>
+                    </div>
+                    <a href="https://workupload.com/start/txuanQR3QmK" id="downloadLauncherBtn" class="btn-download" target="_blank">Скачать лаунчер</a>
+                </div>
+
+                <div class="profile-grid">
+                    <div class="profile-box">
+                        <h3>Данные аккаунта</h3>
+                        <div class="profile-data">
+                            <p><strong>Никнейм:</strong> <span id="profUser">Загрузка...</span></p>
+                            <p><strong>Роль:</strong> <span id="profRole" class="role-badge">Загрузка...</span></p>
+                            <p><strong>Email:</strong> <span id="profEmail">Загрузка...</span></p>
+                            <p><strong>Telegram:</strong> <span id="profTg" style="color: #38bdf8;">Не привязан</span></p>
+                            <p><strong>HWID:</strong> <span id="profHwid" style="color: #f59e0b; font-family: monospace;">Не привязан</span></p>
+                            <p><strong>Наиграно:</strong> <span id="profPlayTime" style="color: #a78bfa;">0 ч.</span></p>
+                            <p><strong>UID:</strong> <span id="profUid" class="uid-text">Загрузка...</span></p>
+                        </div>
+                    </div>
+
+                    <div class="profile-box">
+                        <h3>Привязка и ключи</h3>
+                        <div class="form-group">
+                            <label>Привязать Telegram</label>
+                            <div class="input-inline">
+                                <input type="text" id="telegramInput" placeholder="@username или ссылка на ТГ">
+                                <button id="saveTelegramBtn" class="btn-primary" style="background-color: #38bdf8; color: #120e1a; width: auto;">Сохранить</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Активация ключа доступа</label>
+                            <div class="input-inline">
+                                <input type="text" id="promoCodeInput" placeholder="Ввести ключ">
+                                <button id="activateCodeBtn" class="btn-primary" style="width: auto;">Активировать</button>
+                            </div>
+                            <p id="keyMsg"></p>
+                        </div>
+                    </div>
+
+                    <div class="profile-box">
+                        <h3>Топ игроков</h3>
+                        <div id="profileLeaderboardList">
+                            <p style="color: gray; text-align: center; font-size: 13px;">Загрузка...</p>
+                        </div>
+                    </div>
+
+                    <div class="profile-box">
+                        <h3>Мониторинг серверов</h3>
+                        <div class="input-inline" style="margin-bottom: 12px;">
+                            <input type="text" id="customServerIpInput" placeholder="Введи любой IP (напр. play.hypixel.net)..." style="font-size: 12px; padding: 8px 12px;">
+                            <button id="checkCustomServerBtn" class="btn-primary" style="width: 100px; font-size: 12px; padding: 8px;">Проверить</button>
+                        </div>
+                        <div id="customServerResult" style="margin-bottom: 10px;"></div>
+
+                        <div id="serversStatusList" class="servers-grid" style="max-height: 280px; overflow-y: auto; padding-right: 4px;">
+                            <p style="color: gray; text-align: center; font-size: 13px;">Опрос серверов...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; text-align: right;">
+                <button id="logoutBtn" class="btn-danger" style="padding: 10px 30px;">Выйти из аккаунта</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно Музыки -->
+    <div id="musicModal" class="fullscreen-music hidden">
+        <div class="music-container">
+            <div class="music-header">
+                <div>
+                    <h2 class="glow-text" style="margin: 0;">Horus Music Hub</h2>
+                    <p style="margin: 4px 0 0 0; font-size: 13px; color: gray;">Поиск музыки со всего мира и управление личным плейлистом</p>
+                </div>
+                <button id="closeMusicBtn" class="btn-secondary">Закрыть</button>
+            </div>
+
+            <div class="music-tabs">
+                <button id="musicTabSearch" class="music-tab-btn active">🔍 Поиск треков</button>
+                <button id="musicTabPlaylist" class="music-tab-btn">📑 Мой плейлист (<span id="playlistCount">0</span>)</button>
+            </div>
+
+            <div id="musicSearchSection" class="music-section active-section">
+                <div class="search-input-wrapper" style="position: relative; margin-bottom: 20px;">
+                    <div class="input-inline">
+                        <input type="text" id="musicSearchInput" placeholder="Введите название песни или исполнителя..." autocomplete="off">
+                        <button id="musicSearchBtn" class="btn-primary" style="width: 140px;">Найти</button>
+                    </div>
+                    <div id="musicSuggestionsBox" class="suggestions-box hidden"></div>
+                </div>
+
+                <div id="musicSearchResults" class="music-tracks-grid">
+                    <p style="color: gray; text-align: center; grid-column: 1 / -1;">Введите запрос для поиска треков</p>
+                </div>
+            </div>
+
+            <div id="musicPlaylistSection" class="music-section hidden">
+                <div id="musicPlaylistTracks" class="music-tracks-grid">
+                    <p style="color: gray; text-align: center; grid-column: 1 / -1;">Плейлист пуст</p>
+                </div>
+            </div>
+
+            <div id="musicPlayerBar" class="music-player-bar hidden">
+                <div class="now-playing-info">
+                    <span id="playerTrackTitle" style="color: #c084fc; font-weight: bold; font-size: 14px;">Название трека</span>
+                    <span id="playerTrackArtist" style="color: gray; font-size: 12px;">Исполнитель</span>
+                </div>
+                <audio id="globalAudioPlayer" controls autoplay style="height: 38px; outline: none; border-radius: 20px;"></audio>
+            </div>
+        </div>
+    </div>
+
+    <!-- Панель Разработки (HowillOwner) -->
+    <div id="devModal" class="modal hidden">
+        <div class="modal-content" style="width: 420px; max-height: 90vh; overflow-y: auto;">
+            <span class="close-btn" id="closeDev">&times;</span>
+            <h2 class="glow-text" style="color: #e11d48;">Панель Создателя</h2>
+            
+            <div class="code-section" style="border-top: none; margin-top: 0; padding-top: 0;">
+                <p class="dev-label">Генерация ключей</p>
+                <select id="keyTypeSelect" class="custom-select" style="margin-bottom: 10px;">
+                    <option value="Подписка на 67 дн">Подписка на 67 дн</option>
+                    <option value="Подписка 360 дн">Подписка 360 дн</option>
+                    <option value="Подписка навсегда">Подписка навсегда</option>
+                    <option value="Доступ BETA навсегда">Доступ BETA навсегда</option>
+                    <option value="Сброс HWID">Сброс HWID</option>
+                    <option value="custom">Кастомная подписка</option>
+                </select>
+                <input type="number" id="customDaysInput" class="custom-select hidden" placeholder="Количество дней (напр. 14)" min="1" style="margin-bottom: 10px;">
+                
+                <button id="generateCodeBtn" class="btn-primary" style="background-color: #e11d48;">Сгенерировать ключ</button>
+                <div id="keysInventory" class="inventory-box" style="margin-top: 10px;"></div>
+                <button id="loadKeysBtn" class="btn-primary" style="margin-top: 10px; font-size: 12px; padding: 5px;">Обновить список ключей</button>
+            </div>
+
+            <div class="code-section">
+                <p class="dev-label">Выдача ролей по UID</p>
+                <input type="text" id="targetUidInput" placeholder="UID пользователя">
+                <select id="roleSelect" class="custom-select" style="margin-top: 10px; margin-bottom: 10px;">
+                    <option value="Owner">Owner</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Moder">Moder</option>
+                    <option value="Beta">Beta</option>
+                    <option value="Komini">Komini</option>
+                    <option value="User">User</option>
+                </select>
+                <button id="setRoleBtn" class="btn-primary" style="background-color: #e11d48;">Выдать роль</button>
+            </div>
+
+            <div class="code-section">
+                <p class="dev-label">Зарегистрированные аккаунты</p>
+                <div id="usersList" class="inventory-box" style="max-height: 200px; margin-top: 5px;"></div>
+                <button id="loadUsersBtn" class="btn-primary" style="margin-top: 10px; font-size: 12px; padding: 5px;">Обновить список пользователей</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Панель Модератора с формой банов -->
+    <div id="moderModal" class="modal hidden">
+        <div class="modal-content" style="width: 380px;">
+            <span class="close-btn" id="closeModer">&times;</span>
+            <h2 class="glow-text" style="color: #3b82f6;">Панель Модератора</h2>
+            
+            <div class="form-group" style="margin-bottom: 5px;">
+                <label>UID или Никнейм пользователя:</label>
+                <input type="text" id="moderTargetInput" placeholder="Введите UID или ник">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 5px;">
+                <label>Причина бана (необязательно при разбане):</label>
+                <input type="text" id="moderReasonInput" placeholder="Например: Читы / 1.1">
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button id="moderBanBtn" class="btn-primary" style="background-color: #e11d48; flex: 1;">Забанить</button>
+                <button id="moderUnbanBtn" class="btn-primary" style="background-color: #22c55e; flex: 1;">Разбанить</button>
+            </div>
+            <p id="moderActionMsg" style="font-size: 13px; text-align: center; margin-top: 10px;"></p>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
