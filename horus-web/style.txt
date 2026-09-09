@@ -1,0 +1,176 @@
+:root {
+    --bg-dark: #120e1a;
+    --card-bg: #1a1224;
+    --input-bg: #251838;
+    --border-color: #34224f;
+    --primary: #6b21a8;
+    --primary-hover: #581c87;
+    --text-glow: #c084fc;
+    --danger: #e11d48;
+}
+
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: var(--bg-dark);
+    color: white;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-glow);
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.hero {
+    text-align: center;
+    padding: 100px 20px;
+}
+
+.glow-text {
+    color: var(--text-glow);
+}
+
+.btn-primary, .btn-danger {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.btn-primary:hover { background-color: var(--primary-hover); }
+.btn-danger { background-color: transparent; border: 1px solid var(--danger); color: var(--danger); margin-top: 15px; width: 100%;}
+.btn-danger:hover { background-color: var(--danger); color: white;}
+
+.hidden { display: none !important; }
+
+.modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid var(--border-color);
+    width: 320px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px; right: 15px;
+    font-size: 24px;
+    color: gray;
+    cursor: pointer;
+}
+
+input {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+input:focus { border-color: var(--primary); }
+
+.toggle-text {
+    text-align: center;
+    font-size: 13px;
+    color: gray;
+    cursor: pointer;
+}
+.toggle-text:hover { color: white; }
+
+.profile-data p { margin: 10px 0; font-size: 15px;}
+.uid-text { font-family: monospace; font-size: 12px; color: gray; }
+.role-badge { background-color: var(--primary); padding: 3px 8px; border-radius: 5px; font-size: 12px;}
+
+.code-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.inventory-box {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    max-height: 120px;
+    overflow-y: auto;
+    margin-top: 15px;
+    font-family: monospace;
+    font-size: 13px;
+}
+
+.inventory-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.inventory-item:last-child {
+    border-bottom: none;
+}
+
+.status-used { color: var(--danger); font-size: 11px; }
+.status-free { color: #4ade80; font-size: 11px; }
+
+.custom-select {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.custom-select:focus {
+    border-color: var(--primary);
+}
+
+.custom-select option {
+    background-color: var(--bg-dark);
+    color: white;
+}

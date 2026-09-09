@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HorusClient</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">HorusClient</div>
+        <div class="nav-buttons">
+            <button id="devPanelBtn" class="btn-primary hidden" style="background-color: #e11d48;">Разработка</button>
+            <button id="navAuthBtn" class="btn-primary">Войти</button>
+        </div>
+    </nav>
+
+    <main class="hero">
+        <h1 class="glow-text">HorusClient — это твое будущее</h1>
+        <p>Управляй своим аккаунтом и активируй ключи доступа.</p>
+    </main>
+
+    <!-- Окно Входа / Регистрации -->
+    <div id="authModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn" id="closeAuth">&times;</span>
+            <h2 id="authTitle" class="glow-text">Вход</h2>
+            
+            <input type="text" id="usernameInput" class="hidden" placeholder="Никнейм">
+            <input type="email" id="emailInput" placeholder="Email (Gmail)">
+            <input type="password" id="passwordInput" placeholder="Пароль">
+            
+            <button id="submitAuthBtn" class="btn-primary">Войти</button>
+            <p id="toggleAuthMode" class="toggle-text">Нет аккаунта? Зарегистрироваться</p>
+        </div>
+    </div>
+
+    <!-- Окно Профиля -->
+    <div id="profileModal" class="modal hidden">
+        <div class="modal-content profile-card">
+            <span class="close-btn" id="closeProfile">&times;</span>
+            <h2 class="glow-text">Профиль</h2>
+            <div class="profile-data">
+                <p><strong>Никнейм:</strong> <span id="profUser">Загрузка...</span></p>
+                <p><strong>Роль:</strong> <span id="profRole" class="role-badge">Загрузка...</span></p>
+                <p><strong>Email:</strong> <span id="profEmail">Загрузка...</span></p>
+                <p><strong>Telegram:</strong> <span id="profTg" style="color: #38bdf8;">Не привязан</span></p>
+                <p><strong>UID:</strong> <span id="profUid" class="uid-text">Загрузка...</span></p>
+            </div>
+
+            <div class="code-section">
+                <input type="text" id="telegramInput" placeholder="@username или ссылка на ТГ">
+                <button id="saveTelegramBtn" class="btn-primary" style="background-color: #38bdf8; color: #120e1a;">Привязать Telegram</button>
+            </div>
+            
+            <div class="code-section">
+                <input type="text" id="promoCodeInput" placeholder="Ввести ключ активации">
+                <button id="activateCodeBtn" class="btn-primary">Активировать</button>
+            </div>
+
+            <button id="logoutBtn" class="btn-danger">Выйти</button>
+        </div>
+    </div>
+
+    <!-- Панель Разработки (Только для HowillOwner) -->
+    <div id="devModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn" id="closeDev">&times;</span>
+            <h2 class="glow-text" style="color: #e11d48;">Панель Создателя</h2>
+            
+            <div class="code-section" style="border-top: none; margin-top: 0; padding-top: 0;">
+                <p style="font-size: 13px; color: gray; margin: 0; margin-bottom: 10px;">Генерация ключей</p>
+                
+                <select id="keyTypeSelect" class="custom-select" style="margin-bottom: 10px;">
+                    <option value="Подписка 30 дней">Подписка 30 дней</option>
+                    <option value="Подписка 90 дней">Подписка 90 дней</option>
+                    <option value="Подписка навсегда">Подписка навсегда</option>
+                    <option value="Доступ Beta">Доступ Beta</option>
+                </select>
+
+                <button id="generateCodeBtn" class="btn-primary" style="background-color: #e11d48;">Сгенерировать ключ</button>
+                
+                <div id="keysInventory" class="inventory-box">
+                    <p style="color: gray; text-align: center; margin: 10px 0;">Загрузка инвентаря...</p>
+                </div>
+                <button id="loadKeysBtn" class="btn-primary" style="margin-top: 10px; font-size: 12px; padding: 5px;">Обновить список</button>
+            </div>
+
+            <div class="code-section">
+                <p style="font-size: 13px; color: gray; margin: 0;">Выдача ролей по UID</p>
+                <input type="text" id="targetUidInput" placeholder="UID пользователя">
+                <select id="roleSelect" class="custom-select">
+                    <option value="Owner">Owner</option>
+                    <option value="Moder">Moder</option>
+                    <option value="Beta">Beta</option>
+                    <option value="User">User</option>
+                </select>
+                <button id="setRoleBtn" class="btn-primary" style="background-color: #e11d48;">Выдать роль</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>

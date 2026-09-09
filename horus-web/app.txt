@@ -1,0 +1,262 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBRe1jb0BzT3NL_aZcJktjn-dMlzVU1knk",
+    authDomain: "horusweb-66ab6.firebaseapp.com",
+    projectId: "horusweb-66ab6",
+    storageBucket: "horusweb-66ab6.firebasestorage.app",
+    messagingSenderId: "706747176842",
+    appId: "1:706747176842:web:98956db78f57b43ec6da73"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const navAuthBtn = document.getElementById('navAuthBtn');
+const devPanelBtn = document.getElementById('devPanelBtn');
+const authModal = document.getElementById('authModal');
+const profileModal = document.getElementById('profileModal');
+const devModal = document.getElementById('devModal');
+const closeAuth = document.getElementById('closeAuth');
+const closeProfile = document.getElementById('closeProfile');
+const closeDev = document.getElementById('closeDev');
+const authTitle = document.getElementById('authTitle');
+const usernameInput = document.getElementById('usernameInput');
+const emailInput = document.getElementById('emailInput');
+const passwordInput = document.getElementById('passwordInput');
+const submitAuthBtn = document.getElementById('submitAuthBtn');
+const toggleAuthMode = document.getElementById('toggleAuthMode');
+const logoutBtn = document.getElementById('logoutBtn');
+
+const generateCodeBtn = document.getElementById('generateCodeBtn');
+const keyTypeSelect = document.getElementById('keyTypeSelect');
+const promoCodeInput = document.getElementById('promoCodeInput');
+const activateCodeBtn = document.getElementById('activateCodeBtn');
+const keysInventory = document.getElementById('keysInventory');
+const loadKeysBtn = document.getElementById('loadKeysBtn');
+
+const targetUidInput = document.getElementById('targetUidInput');
+const roleSelect = document.getElementById('roleSelect');
+const setRoleBtn = document.getElementById('setRoleBtn');
+
+const telegramInput = document.getElementById('telegramInput');
+const saveTelegramBtn = document.getElementById('saveTelegramBtn');
+
+let isLoginMode = true;
+
+navAuthBtn.onclick = () => auth.currentUser ? profileModal.classList.remove('hidden') : authModal.classList.remove('hidden');
+devPanelBtn.onclick = () => {
+    devModal.classList.remove('hidden');
+    loadInventory();
+};
+
+closeAuth.onclick = () => authModal.classList.add('hidden');
+closeProfile.onclick = () => profileModal.classList.add('hidden');
+closeDev.onclick = () => devModal.classList.add('hidden');
+
+toggleAuthMode.onclick = () => {
+    isLoginMode = !isLoginMode;
+    authTitle.innerText = isLoginMode ? "Вход" : "Регистрация";
+    submitAuthBtn.innerText = isLoginMode ? "Войти" : "Создать аккаунт";
+    toggleAuthMode.innerText = isLoginMode ? "Нет аккаунта? Зарегистрироваться" : "Уже есть аккаунт? Войти";
+    isLoginMode ? usernameInput.classList.add('hidden') : usernameInput.classList.remove('hidden');
+};
+
+submitAuthBtn.onclick = async () => {
+    const email = emailInput.value;
+    const password = passwordInput.value;
+    const username = usernameInput.value;
+
+    try {
+        if (isLoginMode) {
+            await signInWithEmailAndPassword(auth, email, password);
+        } else {
+            if (username.length < 3) return alert("Никнейм минимум 3 символа!");
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            
+            await setDoc(doc(db, "users", user.uid), {
+                username: username,
+                email: email,
+                role: "User",
+                telegram: "Не привязан",
+                uid: user.uid
+            });
+        }
+        authModal.classList.add('hidden');
+    } catch (error) {
+        alert("Ошибка: " + error.message);
+    }
+};
+
+logoutBtn.onclick = async () => {
+    await signOut(auth);
+    profileModal.classList.add('hidden');
+};
+
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        navAuthBtn.innerText = "Профиль";
+        document.getElementById('profEmail').innerText = user.email;
+        document.getElementById('profUid').innerText = user.uid;
+        
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            document.getElementById('profUser').innerText = data.username;
+            document.getElementById('profRole').innerText = data.role;
+            
+            const tgVal = data.telegram || "Не привязан";
+            document.getElementById('profTg').innerText = tgVal;
+            if(tgVal !== "Не привязан") {
+                telegramInput.value = tgVal;
+            }
+            
+            if (data.username === "HowillOwner") {
+                devPanelBtn.classList.remove('hidden');
+            } else {
+                devPanelBtn.classList.add('hidden');
+            }
+        }
+    } else {
+        navAuthBtn.innerText = "Войти";
+        devPanelBtn.classList.add('hidden');
+    }
+});
+
+saveTelegramBtn.onclick = async () => {
+    const tgValue = telegramInput.value.trim();
+    if (!tgValue) return alert("Введите ваш Telegram!");
+    if (!auth.currentUser) return;
+
+    try {
+        const userRef = doc(db, "users", auth.currentUser.uid);
+        await updateDoc(userRef, { telegram: tgValue });
+        document.getElementById('profTg').innerText = tgValue;
+        alert("Telegram успешно привязан!");
+    } catch (error) {
+        alert("Ошибка сохранения: " + error.message);
+    }
+};
+
+const loadInventory = async () => {
+    keysInventory.innerHTML = '<p style="color: gray; text-align: center; margin: 10px 0;">Загрузка...</p>';
+    try {
+        const querySnapshot = await getDocs(collection(db, "codes"));
+        keysInventory.innerHTML = '';
+        let count = 0;
+        
+        querySnapshot.forEach((docSnap) => {
+            count++;
+            const data = docSnap.data();
+            const statusHtml = data.used 
+                ? `<span class="status-used">Использован</span>` 
+                : `<span class="status-free">Доступен</span>`;
+            
+            const keyTypeDisplay = data.type ? ` (${data.type})` : "";
+            
+            keysInventory.innerHTML += `
+                <div class="inventory-item">
+                    <span>${docSnap.id}${keyTypeDisplay}</span>
+                    ${statusHtml}
+                </div>
+            `;
+        });
+        
+        if (count === 0) {
+            keysInventory.innerHTML = '<p style="color: gray; text-align: center; margin: 10px 0;">Инвентарь пуст</p>';
+        }
+    } catch (error) {
+        keysInventory.innerHTML = '<p style="color: var(--danger); text-align: center;">Ошибка загрузки базы данных</p>';
+    }
+};
+
+loadKeysBtn.onclick = loadInventory;
+
+generateCodeBtn.onclick = async () => {
+    const randomChars = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const newCode = "HORUS-" + randomChars;
+    const selectedType = keyTypeSelect.value;
+    
+    try {
+        await setDoc(doc(db, "codes", newCode), {
+            used: false,
+            type: selectedType,
+            createdAt: new Date()
+        });
+        loadInventory();
+    } catch (error) {
+        alert("Ошибка генерации: " + error.message);
+    }
+};
+
+activateCodeBtn.onclick = async () => {
+    const code = promoCodeInput.value.trim().toUpperCase();
+    if (!code) return alert("Введите код!");
+    if (!auth.currentUser) return;
+
+    try {
+        const codeRef = doc(db, "codes", code);
+        const codeSnap = await getDoc(codeRef);
+
+        if (codeSnap.exists()) {
+            const codeData = codeSnap.data();
+            
+            if (codeData.used) {
+                alert("Этот код уже был использован!");
+            } else {
+                await updateDoc(codeRef, { 
+                    used: true, 
+                    activatedBy: auth.currentUser.uid 
+                });
+                
+                let newRole = "Premium";
+                if (codeData.type === "Доступ Beta") newRole = "Beta";
+                else if (codeData.type === "Подписка навсегда") newRole = "Premium (Навсегда)";
+                else if (codeData.type === "Подписка 30 дней") newRole = "Premium (30 дн)";
+                else if (codeData.type === "Подписка 90 дней") newRole = "Premium (90 дн)";
+
+                const userRef = doc(db, "users", auth.currentUser.uid);
+                await updateDoc(userRef, { role: newRole });
+                
+                alert(`Ключ активирован! Вы получили роль ${newRole}.`);
+                document.getElementById('profRole').innerText = newRole;
+                promoCodeInput.value = "";
+            }
+        } else {
+            alert("Неверный ключ активации!");
+        }
+    } catch (error) {
+        alert("Ошибка активации: " + error.message);
+    }
+};
+
+setRoleBtn.onclick = async () => {
+    const targetUid = targetUidInput.value.trim();
+    const newRole = roleSelect.value;
+    
+    if (!targetUid) return alert("Укажите UID пользователя!");
+    
+    try {
+        const targetUserRef = doc(db, "users", targetUid);
+        const targetUserSnap = await getDoc(targetUserRef);
+        
+        if (targetUserSnap.exists()) {
+            await updateDoc(targetUserRef, { role: newRole });
+            alert(`Роль [${newRole}] успешно выдана пользователю с UID: ${targetUid}`);
+            targetUidInput.value = "";
+            
+            if (targetUid === auth.currentUser.uid) {
+                document.getElementById('profRole').innerText = newRole;
+            }
+        } else {
+            alert("Ошибка: Пользователь с таким UID не найден.");
+        }
+    } catch (error) {
+        alert("Ошибка выдачи роли: " + error.message);
+    }
+};
